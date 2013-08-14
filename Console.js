@@ -2,7 +2,7 @@
  * Name:    Console.js
  * Info:    A simple but useful extension for the JavaScript console with a stack trace and more
  * Author:  Gabriel Nahmias (http://terrasoftlabs.com)
- * Version: 1.1
+ * Version: 1.15
  */
 
 // Only global namespace.
@@ -11,10 +11,10 @@ var Console = {
     settings: {
         debug: {
             enabled: true,
-            showInfo: true,
-            trace: true
+            showInfo: true
         },
         stackTrace: {
+            enabled: true,
             collapsed: true,
             ignoreDebugFuncs: true,
             spacing: false
@@ -60,7 +60,7 @@ Console.debug = function () {
         sLines = "";
 
     // Show info if the setting is true and there's no extra trace (would be kind of pointless).
-    if (Console.settings.debug.showInfo && !Console.settings.debug.trace) {
+    if (Console.settings.debug.showInfo && !Console.settings.stackTrace.enabled) {
         var sFunc = aCurrentLine[0],
             sURL = aCurrentLine[1],
             sLine = aCurrentLine[2];
@@ -84,7 +84,7 @@ Console.debug = function () {
         for (var arg in args)
             console.debug(args[arg]);
 
-        if (Console.settings.debug.trace) {
+        if (Console.settings.stackTrace.enabled) {
             var sCss = "color:red; font-weight: bold;",
                 sTitle = "%c Stack Trace" + " ".times(70);
 
