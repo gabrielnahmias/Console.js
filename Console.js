@@ -2,29 +2,44 @@
  * Name:    Console.js
  * Info:    A simple but useful extension for the JavaScript console with a stack trace and more.
  * Author:  Gabriel Nahmias (http://terrasoftlabs.com|gabriel@terrasoftlabs.com)
- * Version: 1.3
+ * Version: 1.4
  */
 
 (function(context){
 	// Only global namespace.
 	var Console = {
-		//Settings
-		settings: {
-			debug: {
-				alwaysShowURL: false,
-				enabled: true,
-				showInfo: true
-			},
-			stackTrace: {
-				enabled: true,
-				collapsed: true,
-				ignoreDebugFuncs: true,
-				spacing: false
-			}
+		// Options
+		options: {
+			debug: {},
+			stackTrace: {}
+		},
+		_utils: {}
+	},
+	defaultOptions = {
+		debug: {
+			alwaysShowURL: false,
+			enabled: true,
+			showInfo: true
+		},
+		stackTrace: {
+			enabled: true,
+			collapsed: true,
+			ignoreDebugFuncs: true,
+			spacing: false
 		}
 	};
-	Console.ver = Console.version = 1.3;
-	// String prototype functions.
+	Console.ver = Console.version = 1.4;
+	// Utilities
+	function extend() {
+		for(var i=1; i<arguments.length; i++)
+			for(var key in arguments[i])
+				if(arguments[i].hasOwnProperty(key))
+					arguments[0][key] = arguments[i][key];
+		return arguments[0];
+	}
+	// Add default options.
+	extend(Console.options, defaultOptions);
+	// String prototype functions
 	// For formatting.
 	if (!String.prototype.format) {
 		String.prototype.format = function () {
@@ -53,7 +68,7 @@
 	}
 	// Commonly used functions
 	Console.debug = function () {
-		if (Console.settings.debug.enabled) {
+		if (Console.options.debug.enabled) {
 			var args = ((typeof arguments !== 'undefined') ? Array.prototype.slice.call(arguments, 0) : []),
 				sUA = navigator.userAgent,
 				currentBrowser = {
@@ -71,10 +86,10 @@
 			else if (currentBrowser.webkit)
 				aCurrentLine = aLines[iCurrIndex].replace("at ", "").replace(")", "").replace(/( \()/gi, "@").replace(/(.*):(\d*):(\d*)/, "$1@$2@$3").split("@");
 			// Show info if the setting is true and there's no extra trace (would be kind of pointless).
-			if (Console.settings.debug.showInfo && !Console.settings.stackTrace.enabled) {
+			if (Console.options.debug.showInfo && !Console.options.stackTrace.enabled) {
 				var sFunc = aCurrentLine[0].trim(),
 					sURL = aCurrentLine[1].trim(),
-					sURL = ((!Console.settings.debug.alwaysShowURL && context.location.href == sURL) ? "this page" : sURL),
+					sURL = ((!Console.options.debug.alwaysShowURL && context.location.href == sURL) ? "this page" : sURL),
 					sLine = aCurrentLine[2].trim(),
 					sCol;
 				if (currentBrowser.webkit)
@@ -90,24 +105,23 @@
 				);
 			}
 			// If the setting permits, get rid of the two obvious debug functions (Console.debug and Console.stackTrace).
-			if (Console.settings.stackTrace.ignoreDebugFuncs) {
+			if (Console.options.stackTrace.ignoreDebugFuncs) {
 				// In WebKit (Chrome at least), there's an extra line at the top that says "Error" so adjust for this.
 				if (currentBrowser.webkit)
 					aLines.shift();
 				aLines.shift();
 				aLines.shift();
 			}
-			sLines = aLines.join(((Console.settings.stackTrace.spacing) ? "\n\n" : "\n")).trim();
+			sLines = aLines.join(((Console.options.stackTrace.spacing) ? "\n\n" : "\n")).trim();
 			trace = typeof trace !== 'undefined' ? trace : true;
 			if (typeof console !== "undefined") {
-				for (var arg in args)
-					console.debug(args[arg]);
+				console.debug.apply(console, args);
 	
-				if (Console.settings.stackTrace.enabled) {
+				if (Console.options.stackTrace.enabled) {
 					var sCss = "color:red; font-weight: bold;",
 						sTitle = "%c Stack Trace" + " ".times(70);
 	
-					if (Console.settings.stackTrace.collapsed)
+					if (Console.options.stackTrace.collapsed)
 						console.groupCollapsed(sTitle, sCss);
 					else
 						console.group(sTitle, sCss);
@@ -121,6 +135,7 @@
 		}
 		return false;
 	}
+	Console.setOption
 	Console.stackTrace = function () {
 		var err = new Error();
 		return err.stack;
