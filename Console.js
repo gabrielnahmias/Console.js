@@ -1,8 +1,8 @@
 /*!
  * Name:    Console.js
- * Info:    A simple but useful extension for the JavaScript console with a stack trace and more
- * Author:  Gabriel Nahmias (http://terrasoftlabs.com)
- * Version: 1.2
+ * Info:    A simple but useful extension for the JavaScript console with a stack trace and more.
+ * Author:  Gabriel Nahmias (http://terrasoftlabs.com|gabriel@terrasoftlabs.com)
+ * Version: 1.3
  */
 
 (function(context){
@@ -23,8 +23,9 @@
 			}
 		}
 	};
-
-	// String formatting prototype function.
+	Console.ver = Console.version = 1.3;
+	// String prototype functions.
+	// For formatting.
 	if (!String.prototype.format) {
 		String.prototype.format = function () {
 			var s = this.toString(),
@@ -37,8 +38,7 @@
 			return s;
 		}
 	}
-
-	// String repeating prototype function.
+	// For repeating.
 	if (!String.prototype.times) {
 		String.prototype.times = function () {
 			var s = this.toString(),
@@ -51,7 +51,6 @@
 			return tempStr;
 		}
 	}
-
 	// Commonly used functions
 	Console.debug = function () {
 		if (Console.settings.debug.enabled) {
@@ -67,12 +66,10 @@
 				sCssBlack = "color:black;",
 				sCssFormat = "color:{0}; font-weight:bold;",
 				sLines = "";
-	
 			if (currentBrowser.firefox)
 				aCurrentLine = aLines[iCurrIndex].replace(/(.*):/, "$1@").split("@");
 			else if (currentBrowser.webkit)
 				aCurrentLine = aLines[iCurrIndex].replace("at ", "").replace(")", "").replace(/( \()/gi, "@").replace(/(.*):(\d*):(\d*)/, "$1@$2@$3").split("@");
-		
 			// Show info if the setting is true and there's no extra trace (would be kind of pointless).
 			if (Console.settings.debug.showInfo && !Console.settings.stackTrace.enabled) {
 				var sFunc = aCurrentLine[0].trim(),
@@ -80,18 +77,18 @@
 					sURL = ((!Console.settings.debug.alwaysShowURL && context.location.href == sURL) ? "this page" : sURL),
 					sLine = aCurrentLine[2].trim(),
 					sCol;
-	
 				if (currentBrowser.webkit)
 					sCol = aCurrentLine[3].trim();
-	
-				console.info("%cOn line %c{0}%c{1}%c{2}%c of %c{3}%c inside the %c{4}%c function:".format(sLine, ((currentBrowser.webkit) ? ", column " : ""), ((currentBrowser.webkit) ? sCol : ""), sURL, sFunc),
-							 sCssBlack, sCssFormat.format("red"),
-							 sCssBlack, sCssFormat.format("purple"),
-							 sCssBlack, sCssFormat.format("green"),
-							 sCssBlack, sCssFormat.format("blue"),
-							 sCssBlack);
+				console.info(
+					"%cOn line %c{0}%c{1}%c{2}%c of %c{3}%c inside the %c{4}%c function:".
+					 format(sLine, ((currentBrowser.webkit) ? ", column " : ""), ((currentBrowser.webkit) ? sCol : ""), sURL, sFunc),
+						 sCssBlack, sCssFormat.format("red"),
+						 sCssBlack, sCssFormat.format("purple"),
+						 sCssBlack, sCssFormat.format("green"),
+						 sCssBlack, sCssFormat.format("blue"),
+						 sCssBlack
+				);
 			}
-	
 			// If the setting permits, get rid of the two obvious debug functions (Console.debug and Console.stackTrace).
 			if (Console.settings.stackTrace.ignoreDebugFuncs) {
 				// In WebKit (Chrome at least), there's an extra line at the top that says "Error" so adjust for this.
@@ -100,9 +97,7 @@
 				aLines.shift();
 				aLines.shift();
 			}
-	
 			sLines = aLines.join(((Console.settings.stackTrace.spacing) ? "\n\n" : "\n")).trim();
-	
 			trace = typeof trace !== 'undefined' ? trace : true;
 			if (typeof console !== "undefined") {
 				for (var arg in args)
@@ -122,12 +117,13 @@
 					console.groupEnd();
 				}
 			}
+			return true;
 		}
+		return false;
 	}
 	Console.stackTrace = function () {
 		var err = new Error();
 		return err.stack;
 	}
-
 	context.Console = Console;
 })(window);
