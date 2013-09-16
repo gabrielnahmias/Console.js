@@ -2,7 +2,7 @@
  * Name:    Console.js
  * Info:    A simple but useful extension for the JavaScript console with a stack trace and more.
  * Author:  Gabriel Nahmias (http://terrasoftlabs.com|gabriel@terrasoftlabs.com)
- * Version: 1.4
+ * Version: 1.5
  */
 (function(context){
 	// Only global namespace.
