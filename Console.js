@@ -26,7 +26,9 @@
 	currentBrowser = {
 		firefox: /firefox/gi.test(sUA),
 		webkit: /webkit/gi.test(sUA),
-	};
+	};//,
+	// Provided by Firebug in Firefox. Useless for now.
+	//consoleFuncs = ["assert", "clear", "count", "debug", "dir", "dirxml", "error", "exception", "group", "groupCollapsed", "groupEnd", "info", "log", "profile", "profileEnd", "table", "time", "timeEnd", "timeStamp", "trace", "warn"];
 	
 	Console.ver = Console.version = 1.4;
 	
@@ -112,8 +114,12 @@
 						// If the setting permits, get rid of the two obvious debug functions (Console.* and Console.stackTrace).
 						if (Console.getOption("ignoreDebugFuncs")) {
 							// In WebKit (Chrome at least), there's an extra line at the top that says "Error" so adjust for this.
-							if (currentBrowser.webkit)
+							if (currentBrowser.webkit) {
+								// Extra shift for shortcut functions.
+								if (arguments.callee.name != "_")
+									aLines.shift();
 								aLines.shift();
+							}
 							aLines.shift();
 							aLines.shift();
 						}
@@ -127,14 +133,17 @@
 								context.console.groupCollapsed(sTitle, sCss);
 							else
 								context.console.group(sTitle, sCss);
-							// For now, if useOldStackTrace is false and the console being used is Firebug,
-							// use console.trace() (it provides great detail about the variables passed, etc.).
-							if (!Console.getOption("useOldStackTrace") && context.console.firebug)
+							// For now, if useOldStackTrace is false and the current browser is Firefox (hopefully
+							// Firebug), use console.trace() (Firebug provides great detail about the variables passed,
+							// etc.).
+							if (!Console.getOption("useOldStackTrace") && currentBrowser.firefox)
 								context.console.trace();
 							// Otherwise, use old stack trace method (console.trace() on Chrome, etc. is not as
 							// detailed as it is on Firebug, so the old method is very comparable).
-							else
+							else {
+								console.al
 								context.console.debug("%c" + sLines, "color: #666666; font-style: italic;");
+							}
 							context.console.groupEnd();
 						}
 						return true;
@@ -172,110 +181,188 @@
 	}
 	
 	// Add shortcuts for _ method to Console object.
+	
+	// I WANT to do something like this, even better still as a loop
+	// on the available console object but it's screwing up...
+	/*for (var i = 0; i < consoleFuncs.length; i++) {
+		var method = consoleFuncs[i];
+		Console[method] = function() {
+			var argList = Array.prototype.slice.call(arguments, 0);
+			argList.unshift("assert");
+			if (Console._.apply(Console, argList))
+				return true;
+			else
+				return false;
+		}
+	}*/
+	
 	Console.assert = function() {
 		var argList = Array.prototype.slice.call(arguments, 0);
 		argList.unshift("assert");
-		Console._.apply(Console, argList);
+		if (Console._.apply(Console, argList))
+			return true;
+		else
+			return false;
 	}
 	Console.clear = function() {
 		var argList = Array.prototype.slice.call(arguments, 0);
 		argList.unshift("clear");
-		Console._.apply(Console, argList);
+		if (Console._.apply(Console, argList))
+			return true;
+		else
+			return false;
 	}
 	Console.count = function() {
 		var argList = Array.prototype.slice.call(arguments, 0);
 		argList.unshift("count");
-		Console._.apply(Console, argList);
+		if (Console._.apply(Console, argList))
+			return true;
+		else
+			return false;
 	}
 	Console.debug = function() {
 		var argList = Array.prototype.slice.call(arguments, 0);
 		argList.unshift("debug");
-		Console._.apply(Console, argList);
+		if (Console._.apply(Console, argList))
+			return true;
+		else
+			return false;
 	}
 	Console.dir = function() {
 		var argList = Array.prototype.slice.call(arguments, 0);
 		argList.unshift("dir");
-		Console._.apply(Console, argList);
+		if (Console._.apply(Console, argList))
+			return true;
+		else
+			return false;
 	}
 	Console.dirxml = function() {
 		var argList = Array.prototype.slice.call(arguments, 0);
 		argList.unshift("dirxml");
-		Console._.apply(Console, argList);
+		if (Console._.apply(Console, argList))
+			return true;
+		else
+			return false;
 	}
 	Console.error = function() {
 		var argList = Array.prototype.slice.call(arguments, 0);
 		argList.unshift("error");
-		Console._.apply(Console, argList);
+		if (Console._.apply(Console, argList))
+			return true;
+		else
+			return false;
 	}
 	Console.exception = function() {
 		var argList = Array.prototype.slice.call(arguments, 0);
 		argList.unshift("exception");
-		Console._.apply(Console, argList);
+		if (Console._.apply(Console, argList))
+			return true;
+		else
+			return false;
 	}
 	Console.group = function() {
 		var argList = Array.prototype.slice.call(arguments, 0);
 		argList.unshift("group");
-		Console._.apply(Console, argList);
+		if (Console._.apply(Console, argList))
+			return true;
+		else
+			return false;
 	}
 	Console.groupCollapsed = function() {
 		var argList = Array.prototype.slice.call(arguments, 0);
 		argList.unshift("groupCollapsed");
-		Console._.apply(Console, argList);
+		if (Console._.apply(Console, argList))
+			return true;
+		else
+			return false;
 	}
 	Console.groupEnd = function() {
 		var argList = Array.prototype.slice.call(arguments, 0);
 		argList.unshift("groupEnd");
-		Console._.apply(Console, argList);
+		if (Console._.apply(Console, argList))
+			return true;
+		else
+			return false;
 	}
 	Console.info = function() {
 		var argList = Array.prototype.slice.call(arguments, 0);
 		argList.unshift("info");
-		Console._.apply(Console, argList);
+		if (Console._.apply(Console, argList))
+			return true;
+		else
+			return false;
 	}
 	Console.log = function() {
 		var argList = Array.prototype.slice.call(arguments, 0);
 		argList.unshift("log");
-		Console._.apply(Console, argList);
+		if (Console._.apply(Console, argList))
+			return true;
+		else
+			return false;
 	}
 	Console.profile = function() {
 		var argList = Array.prototype.slice.call(arguments, 0);
 		argList.unshift("profile");
-		Console._.apply(Console, argList);
+		if (Console._.apply(Console, argList))
+			return true;
+		else
+			return false;
 	}
 	Console.profileEnd = function() {
 		var argList = Array.prototype.slice.call(arguments, 0);
 		argList.unshift("profileEnd");
-		Console._.apply(Console, argList);
+		if (Console._.apply(Console, argList))
+			return true;
+		else
+			return false;
 	}
 	Console.table = function() {
 		var argList = Array.prototype.slice.call(arguments, 0);
 		argList.unshift("table");
-		Console._.apply(Console, argList);
+		if (Console._.apply(Console, argList))
+			return true;
+		else
+			return false;
 	}
 	Console.time = function() {
 		var argList = Array.prototype.slice.call(arguments, 0);
 		argList.unshift("time");
-		Console._.apply(Console, argList);
+		if (Console._.apply(Console, argList))
+			return true;
+		else
+			return false;
 	}
 	Console.timeEnd = function() {
 		var argList = Array.prototype.slice.call(arguments, 0);
 		argList.unshift("timeEnd");
-		Console._.apply(Console, argList);
+		if (Console._.apply(Console, argList))
+			return true;
+		else
+			return false;
 	}
 	Console.timeStamp = function() {
 		var argList = Array.prototype.slice.call(arguments, 0);
 		argList.unshift("timeStamp");
-		Console._.apply(Console, argList);
+		if (Console._.apply(Console, argList))
+			return true;
+		else
+			return false;
 	}
 	Console.trace = function() {
 		var argList = Array.prototype.slice.call(arguments, 0);
 		argList.unshift("trace");
-		Console._.apply(Console, argList);
+		if (Console._.apply(Console, argList))
+			return true;
+		else
+			return false;
 	}
 	Console.warn = function() {
 		var argList = Array.prototype.slice.call(arguments, 0);
 		argList.unshift("warn");
-		Console._.apply(Console, argList);
+		if (Console._.apply(Console, argList))
+			return true;
+		else
+			return false;
 	}
 	
 	// Attach Console to the context (defaults to window object).
