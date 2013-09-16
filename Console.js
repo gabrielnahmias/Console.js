@@ -27,7 +27,9 @@
 		firefox: /firefox/gi.test(sUA),
 		webkit: /webkit/gi.test(sUA),
 	};
+	
 	Console.ver = Console.version = 1.4;
+	
 	// Utilities
 	function extend() {
 		for(var i=1; i<arguments.length; i++)
@@ -36,9 +38,12 @@
 					arguments[0][key] = arguments[i][key];
 		return arguments[0];
 	}
+	
 	// Add default options.
 	extend(Console._options, defaultOptions);
+	
 	// String prototype functions
+	
 	// For formatting.
 	if (!String.prototype.format) {
 		String.prototype.format = function () {
@@ -65,6 +70,7 @@
 			return tempStr;
 		}
 	}
+	
 	// Commonly used functions
 	Console._ = function(method) {
 		var enabled = Console.getOption("enabled"),
@@ -164,6 +170,7 @@
 			throw new Error("Value must be a boolean (true/false).");
 		return false;
 	}
+	
 	// Add shortcuts for _ method to Console object.
 	Console.assert = function() {
 		var argList = Array.prototype.slice.call(arguments, 0);
@@ -270,6 +277,7 @@
 		argList.unshift("warn");
 		Console._.apply(Console, argList);
 	}
+	
 	// Attach Console to the context (defaults to window object).
 	context.Console = Console;
 })(window);
