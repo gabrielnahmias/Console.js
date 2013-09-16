@@ -18,7 +18,7 @@
 		// Stack trace
 		enableStackTrace: true,
 		collapsed: true,
-		ignoreDebugFuncs: true,
+		ignoreInternalFuncs: true,
 		spacing: false,
 		useOldStackTrace: false
 	},
@@ -112,7 +112,7 @@
 							);
 						}
 						// If the setting permits, get rid of the two obvious debug functions (Console.* and Console.stackTrace).
-						if (Console.getOption("ignoreDebugFuncs")) {
+						if (Console.getOption("ignoreInternalFuncs")) {
 							// In WebKit (Chrome at least), there's an extra line at the top that says "Error" so adjust for this.
 							if (currentBrowser.webkit) {
 								// Extra shift for shortcut functions.
@@ -135,8 +135,8 @@
 								context.console.group(sTitle, sCss);
 							// For now, if useOldStackTrace is false and the current browser is Firefox (hopefully
 							// Firebug), use console.trace() (Firebug provides great detail about the variables passed,
-							// etc.).
-							if (!Console.getOption("useOldStackTrace") && currentBrowser.firefox)
+							// etc.). Also, don't show a trace if Console.trace() is being called.
+							if (!Console.getOption("useOldStackTrace") && currentBrowser.firefox && method != "trace")
 								context.console.trace();
 							// Otherwise, use old stack trace method (console.trace() on Chrome, etc. is not as
 							// detailed as it is on Firebug, so the old method is very comparable).
