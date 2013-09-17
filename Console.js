@@ -2,7 +2,7 @@
  * Name:    Console.js
  * Info:    A simple but useful extension for the JavaScript console with a stack trace and more.
  * Author:  Gabriel Nahmias (http://terrasoftlabs.com|gabriel@terrasoftlabs.com)
- * Version: 1.5
+ * Version: 1.6
  */
 (function(context){
 	// Only global namespace.
@@ -25,6 +25,7 @@
 	sUA = navigator.userAgent,
 	currentBrowser = {
 		firefox: /firefox/gi.test(sUA),
+		ie: /trident/gi.test(sUA),			// This ought to work.
 		webkit: /webkit/gi.test(sUA),
 	};//,
 	// Provided by Firebug in Firefox. Useless for now.
@@ -126,7 +127,7 @@
 						sLines = aLines.join(((Console.getOption("spacing")) ? "\n\n" : "\n")).trim();
 						trace = typeof trace !== 'undefined' ? trace : true;
 						context.console[method].apply(context.console, args);
-						if (Console.getOption("enableStackTrace")) {
+						if (Console.getOption("enableStackTrace") && !currentBrowser.ie) {
 							var sCss = "color:red; font-weight: bold;",
 								sTitle = "%c Stack Trace" + " ".times(70);
 							if (Console.getOption("collapsed"))
@@ -157,8 +158,13 @@
 		return false;
 	}
 	Console.stackTrace = function () {
-		var err = new Error();
-		return err.stack;
+		var err = new Error(),
+			stack;
+		if (typeof err.stack === 'undefined')
+			stack = "";
+		else
+			stack = err.stack;
+		return stack;
 	}
 	Console.getOption = function(option) {
 		if (typeof Console._options[option] !== "undefined") {
@@ -213,6 +219,8 @@
 			return false;
 	}
 	Console.count = function() {
+		if (currentBrowser.ie)
+			return null;
 		var argList = Array.prototype.slice.call(arguments, 0);
 		argList.unshift("count");
 		if (Console._.apply(Console, argList))
@@ -222,7 +230,11 @@
 	}
 	Console.debug = function() {
 		var argList = Array.prototype.slice.call(arguments, 0);
-		argList.unshift("debug");
+		// Use dir in place of debug in IE.
+		// For these situations, I may want to use something like:
+		// typeof context.console.debug === 'undefined' to check
+		// in all situations/browsers that the method exists.
+		argList.unshift((currentBrowser.ie) ? "dir" : "debug");
 		if (Console._.apply(Console, argList))
 			return true;
 		else
@@ -237,6 +249,8 @@
 			return false;
 	}
 	Console.dirxml = function() {
+		if (currentBrowser.ie)
+			return null;
 		var argList = Array.prototype.slice.call(arguments, 0);
 		argList.unshift("dirxml");
 		if (Console._.apply(Console, argList))
@@ -253,6 +267,8 @@
 			return false;
 	}
 	Console.exception = function() {
+		if (currentBrowser.ie)
+			return null;
 		var argList = Array.prototype.slice.call(arguments, 0);
 		argList.unshift("exception");
 		if (Console._.apply(Console, argList))
@@ -261,6 +277,8 @@
 			return false;
 	}
 	Console.group = function() {
+		if (currentBrowser.ie)
+			return null;
 		var argList = Array.prototype.slice.call(arguments, 0);
 		argList.unshift("group");
 		if (Console._.apply(Console, argList))
@@ -269,6 +287,8 @@
 			return false;
 	}
 	Console.groupCollapsed = function() {
+		if (currentBrowser.ie)
+			return null;
 		var argList = Array.prototype.slice.call(arguments, 0);
 		argList.unshift("groupCollapsed");
 		if (Console._.apply(Console, argList))
@@ -277,6 +297,8 @@
 			return false;
 	}
 	Console.groupEnd = function() {
+		if (currentBrowser.ie)
+			return null;
 		var argList = Array.prototype.slice.call(arguments, 0);
 		argList.unshift("groupEnd");
 		if (Console._.apply(Console, argList))
@@ -317,6 +339,8 @@
 			return false;
 	}
 	Console.table = function() {
+		if (currentBrowser.ie)
+			return null;
 		var argList = Array.prototype.slice.call(arguments, 0);
 		argList.unshift("table");
 		if (Console._.apply(Console, argList))
@@ -325,6 +349,8 @@
 			return false;
 	}
 	Console.time = function() {
+		if (currentBrowser.ie)
+			return null;
 		var argList = Array.prototype.slice.call(arguments, 0);
 		argList.unshift("time");
 		if (Console._.apply(Console, argList))
@@ -333,6 +359,8 @@
 			return false;
 	}
 	Console.timeEnd = function() {
+		if (currentBrowser.ie)
+			return null;
 		var argList = Array.prototype.slice.call(arguments, 0);
 		argList.unshift("timeEnd");
 		if (Console._.apply(Console, argList))
@@ -341,6 +369,8 @@
 			return false;
 	}
 	Console.timeStamp = function() {
+		if (currentBrowser.ie)
+			return null;
 		var argList = Array.prototype.slice.call(arguments, 0);
 		argList.unshift("timeStamp");
 		if (Console._.apply(Console, argList))
@@ -349,6 +379,8 @@
 			return false;
 	}
 	Console.trace = function() {
+		if (currentBrowser.ie)
+			return null;
 		var argList = Array.prototype.slice.call(arguments, 0);
 		argList.unshift("trace");
 		if (Console._.apply(Console, argList))
