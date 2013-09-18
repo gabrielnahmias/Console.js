@@ -2,7 +2,7 @@
  * Name:    Console.js
  * Info:    A simple but useful extension for the JavaScript console with a stack trace and more.
  * Author:  Gabriel Nahmias (http://terrasoftlabs.com|gabriel@terrasoftlabs.com)
- * Version: 1.6
+ * Version: 1.7a
  */
 (function(context){
 	// Only global namespace.
@@ -25,7 +25,8 @@
 	sUA = navigator.userAgent,
 	currentBrowser = {
 		firefox: /firefox/gi.test(sUA),
-		ie: /trident/gi.test(sUA),			// This ought to work.
+		ie: /msie/gi.test(sUA),
+		ios: /i(phone|pad)/gi.test(sUA),
 		webkit: /webkit/gi.test(sUA),
 	};//,
 	// Provided by Firebug in Firefox. Useless for now.
@@ -91,8 +92,10 @@
 							sLines = "";
 						if (currentBrowser.firefox)
 							aCurrentLine = aLines[iCurrIndex].replace(/(.*):/, "$1@").split("@");
-						else if (currentBrowser.webkit)
+						else if (currentBrowser.webkit && !currentBrowser.ios)
 							aCurrentLine = aLines[iCurrIndex].replace("at ", "").replace(")", "").replace(/( \()/gi, "@").replace(/(.*):(\d*):(\d*)/, "$1@$2@$3").split("@");
+						else
+							aCurrentLine = "";	// I'll fuck with this later for iPhones and whatever else...
 						// Show info if the setting is true and there's no extra trace (would be kind of pointless).
 						if (Console.getOption("showInfo") && !Console.getOption("enableStackTrace")) {
 							var sFunc = aCurrentLine[0].trim(),
@@ -137,12 +140,11 @@
 							// For now, if useOldStackTrace is false and the current browser is Firefox (hopefully
 							// Firebug), use console.trace() (Firebug provides great detail about the variables passed,
 							// etc.). Also, don't show a trace if Console.trace() is being called.
-							if (!Console.getOption("useOldStackTrace") && currentBrowser.firefox && method != "trace")
+							if (!Console.getOption("useOldStackTrace")/* && currentBrowser.firefox*/ && method != "trace")
 								context.console.trace();
 							// Otherwise, use old stack trace method (console.trace() on Chrome, etc. is not as
 							// detailed as it is on Firebug, so the old method is very comparable).
 							else {
-								console.al
 								context.console.debug("%c" + sLines, "color: #666666; font-style: italic;");
 							}
 							context.console.groupEnd();
